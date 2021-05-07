@@ -25,7 +25,22 @@ class App extends React.Component {
   }
   search(searchTerm){
     Spotify.search(searchTerm).then(searchResults => {
-      this.setState({SearchResults: searchResults})
+      const unpopularTracks = [];
+      //console.log(searchResults)
+      for(const track in searchResults){
+        //console.log(searchResults[track].artistID)
+        //console.log(Spotify.genreSearch(searchResults[track].artistID))
+        if(searchResults[track].popularity < 25){
+          unpopularTracks.push(searchResults[track])
+        }
+      }
+      if(unpopularTracks.length > 0){
+        this.setState({SearchResults: unpopularTracks})
+      }
+      else {
+        const poserTracks = [{id: "loser", name: "Poser Alert", artist: "Results Too Popular", artistID: "a", album: "Get Better Taste", popularity: -666}]
+        this.setState({SearchResults: poserTracks})
+      }
     })
     
   }

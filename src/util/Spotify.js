@@ -1,5 +1,5 @@
 let uat;
-const redirectURI = 'http://localhost:3000/'
+const redirectURI = 'https://trve.netlify.app/'
 const clientID = '417dd198ea4245caae240a7365d89f02'
 
 export const Spotify = {
@@ -30,7 +30,7 @@ export const Spotify = {
         }}).then(response => {
             return response.json();
         }).then(jsonResponse => {
-            console.log(jsonResponse)
+            //console.log(jsonResponse)
             if(!jsonResponse.tracks){
                 return [];
             }
@@ -40,11 +40,22 @@ export const Spotify = {
                 artist: track.artists[0].name,
                 artistID: track.artists[0].id,
                 album: track.album.name,
+                genre: '',
                 uri: track.uri,
                 popularity: track.popularity
             }));
         })
     },
+    genreSearch(id){
+        const accessToken = Spotify.getAccessToken();
+        fetch(`https://api.spotify.com/v1/artists/${id}`, {headers: {Authorization: `Bearer ${accessToken[1]}`}}).then(response => {
+            return response.json();
+        }).then(jsonResponse => {
+            let genre = jsonResponse.genres[0]
+            return genre
+        })
+    },
+
     savePlaylist(playlistTracks, playlistName){
         if(!playlistTracks.length || !playlistName){
             return;
