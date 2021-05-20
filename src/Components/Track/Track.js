@@ -20,10 +20,11 @@ export class Track extends React.Component{
             return <button className='Track-action' onClick={this.addTrack}>+</button>
         }
     }
-
+    
     render(){
         return(
             <div className="Track">
+                <img src={this.props.track.image} alt={this.props.track.album}/>
                 <div className="Track-information">
                         <h3>{this.props.track.name}</h3>
                         <p>{this.props.track.artist} | {this.props.track.album} | Popularity: {this.props.track.popularity}</p>

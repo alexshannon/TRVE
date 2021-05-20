@@ -1,7 +1,6 @@
 let uat;
-const redirectURI = 'https://trve.netlify.app/'
+const redirectURI = 'http://localhost:3000/'
 const clientID = '417dd198ea4245caae240a7365d89f02'
-
 export const Spotify = {
     getAccessToken(){
         if(uat){
@@ -30,7 +29,6 @@ export const Spotify = {
         }}).then(response => {
             return response.json();
         }).then(jsonResponse => {
-            //console.log(jsonResponse)
             if(!jsonResponse.tracks){
                 return [];
             }
@@ -40,28 +38,18 @@ export const Spotify = {
                 artist: track.artists[0].name,
                 artistID: track.artists[0].id,
                 album: track.album.name,
-                genre: '',
                 uri: track.uri,
-                popularity: track.popularity
+                popularity: track.popularity,
+                image: track.album.images[0].url,
+                genre: ''
             }));
         })
     },
-    genreSearch(id){
-        const accessToken = Spotify.getAccessToken();
-        fetch(`https://api.spotify.com/v1/artists/${id}`, {headers: {Authorization: `Bearer ${accessToken[1]}`}}).then(response => {
-            return response.json();
-        }).then(jsonResponse => {
-            let genre = jsonResponse.genres[0]
-            return genre
-        })
-    },
-
     savePlaylist(playlistTracks, playlistName){
         if(!playlistTracks.length || !playlistName){
             return;
         }
         const accessToken = Spotify.getAccessToken();
-        //const headers = { headers: {Authorization: `Bearer ${accessToken[1]}`}}
         let userID;
         return fetch('https://api.spotify.com/v1/me', {headers: {Authorization: `Bearer ${accessToken[1]}`}}).then(response => {
             return response.json();
@@ -83,5 +71,8 @@ export const Spotify = {
         })
     }
 }
+export const SpotifyMethods = {
+    Spotify
+}
 
-export default Spotify;
+export default SpotifyMethods;
