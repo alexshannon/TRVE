@@ -1,12 +1,12 @@
 let uat;
-const prodBuild = true;
-let redirectURI = ''
-if(prodBuild){
-    redirectURI = 'trve.netlify.app'
-} else {
+const clientID = '417dd198ea4245caae240a7365d89f02'
+let redirectURI;
+if(window.location.href === 'http://localhost:3000/'){
     redirectURI = 'http://localhost:3000/'
 }
-const clientID = '417dd198ea4245caae240a7365d89f02'
+else {
+    redirectURI = 'https://trve.netlify.app/'
+}
 export const Spotify = {
     getAccessToken(){
         if(uat){
