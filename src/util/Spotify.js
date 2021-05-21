@@ -1,12 +1,16 @@
 let uat;
 const clientID = '417dd198ea4245caae240a7365d89f02'
 let redirectURI;
+
+//determines if we're on dev or prod, and sets URI accordingly
 if(window.location.href === 'http://localhost:3000/'){
     redirectURI = 'http://localhost:3000/'
 }
 else {
     redirectURI = 'https://trve.netlify.app/'
 }
+
+
 export const Spotify = {
     getAccessToken(){
         if(uat){
@@ -27,9 +31,10 @@ export const Spotify = {
             window.location = accessURL
         }
     },
-    search(term){
+    search(term, searchCount){
+        let searchURL = `https://api.spotify.com/v1/search?type=track&q=${term}&offset=${searchCount * 20}&limit=20`
         const accessToken = Spotify.getAccessToken();
-        return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, 
+        return fetch(searchURL, 
         { headers: {
             Authorization: `Bearer ${accessToken[1]}`
         }}).then(response => {
@@ -47,7 +52,7 @@ export const Spotify = {
                 uri: track.uri,
                 popularity: track.popularity,
                 image: track.album.images[0].url,
-                genre: ''
+                genre: '',
             }));
         })
     },

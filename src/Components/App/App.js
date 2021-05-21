@@ -6,6 +6,8 @@ import {SearchResults} from '../SearchResults/SearchResults'
 import {Playlist} from '../Playlist/Playlist'
 import {SpotifyMethods} from '../../util/Spotify';
 
+let term = ''
+let searchCount = 0;
 
 class App extends React.Component {
 
@@ -25,7 +27,11 @@ class App extends React.Component {
     this.search = this.search.bind(this)
   }
   search(searchTerm){
-    SpotifyMethods.Spotify.search(searchTerm).then(searchResults => {
+    if(term !== searchTerm){
+      term = searchTerm;
+      searchCount = 0;
+    }
+    SpotifyMethods.Spotify.search(searchTerm, searchCount).then(searchResults => {
       const access = SpotifyMethods.Spotify.getAccessToken()
       //fetches and populates the genreArray
       let counter = 0;
@@ -54,7 +60,6 @@ class App extends React.Component {
     })
   }
   genreSort(results){
-    const unpopularTracks = [];
     const metalTracks = []
     for(const track in results){
       let matched = false;
@@ -68,26 +73,30 @@ class App extends React.Component {
         }
       }
     }
-    //investigate seperating this out to it's own function to reduce complexity
-    if(metalTracks.length > 0){
-      for(const track in metalTracks){
-        if(metalTracks[track].popularity < 99){
-          unpopularTracks.push(metalTracks[track])
+    if(metalTracks.length === 0){
+      this.getMoreSearchResults()
+    }
+    this.trackPopularityFilter(metalTracks)
+  }
+  trackPopularityFilter(tracks){
+    const unpopularTracks = [];
+    if(tracks.length > 0){
+      for(const track in tracks){
+        if(tracks[track].popularity <= 20){
+          unpopularTracks.push(tracks[track])
         }
       }
-    } else{
-      const noResultTracks = [{id: "none", name: "Poser Alert", artist: "No Metal results", artistID: "a", album: "Try again with better taste", popularity: -666}]
-      this.setState({SearchResults: noResultTracks})
     }
-
-    //split these off to be it's own function
     if(unpopularTracks.length > 0){
       this.setState({SearchResults: unpopularTracks})
     }
     else {
-      const poserTracks = [{id: "loser", name: "Poser Alert", artist: "Results Too Popular", artistID: "a", album: "Get Better Taste", popularity: -666}]
-      this.setState({SearchResults: poserTracks})
+      this.getMoreSearchResults()
     }
+  }
+  getMoreSearchResults(){
+    this.search(term)
+    searchCount += 1;
   }
   savePlaylist(){
     const uris = this.state.playlistTracks.map(track => track.uri)
